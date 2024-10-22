@@ -6,7 +6,7 @@ def load_bayesian_network(file_path):
         network = json.load(f)
     return network
 
-# Función para calcular la probabilidad conjunta con corrección en la búsqueda de claves
+# Función para calcular la probabilidad conjunta
 def calculate_joint_probability(network, event):
     joint_prob = 1.0
     for node, value in event.items():
