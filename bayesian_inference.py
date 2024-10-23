@@ -6,13 +6,13 @@ def load_bayesian_network(file_path):
         network = json.load(f)
     return network
 
-# Función para calcular la probabilidad conjunta
+# Función para calcular la probabilidad conjunta con depuración
 def calculate_joint_probability(network, event):
     joint_prob = 1.0
     for node, value in event.items():
         if node in network['dependencies']:
             parent_values = ','.join([event[parent] for parent in network['dependencies'][node]])
-            key = f"{node}|{','.join(network['dependencies'][node])}"  # Ajustar la clave con la estructura correcta
+            key = f"{node}|{','.join(network['dependencies'][node])}"
             print(f"Intentando acceder a la clave: {key} -> {parent_values}")
             if parent_values in network['probabilities'][key]:
                 prob = network['probabilities'][key][parent_values][value]
@@ -20,11 +20,12 @@ def calculate_joint_probability(network, event):
                 print(f"Combinación {parent_values} no encontrada en las probabilidades.")
                 return 0
         else:
+            print(f"Intentando acceder a la clave: {node} -> {value}")
             prob = network['probabilities'][node][value]
         joint_prob *= prob
     return joint_prob
 
-# Algoritmo de inferencia bayesiana
+# Algoritmo de inferencia bayesiana para una pregunta específica
 def bayesian_inference(network, query, evidence):
     hidden_vars = [var for var in network['nodes'] if var not in query and var not in evidence]
     
@@ -44,13 +45,50 @@ def bayesian_inference(network, query, evidence):
     
     return query_prob / normalizing_constant
 
-# Cargar la red bayesiana desde el archivo JSON
-network = load_bayesian_network('bayesian_network.json')
+# Algoritmo para obtener la distribución completa de una variable
+def distribution_of_variable(network, variable, evidence):
+    dist = {}
+    for value in network['nodes'][variable]['values']:
+        query = {variable: value}
+        prob = bayesian_inference(network, query, evidence)
+        dist[value] = prob
+    return dist
 
-# Ejemplo: calcular la probabilidad de llegar a la reunión (attend) dado que hay lluvia ligera y el tren está retrasado
-query = {"Appointment": "attend"}
-evidence = {"Rain": "light", "Train": "delayed"}
+# Función para manejar la entrada del usuario
+def main():
+    # Pedir archivo JSON por consola
+    file_path = input("Ingrese el nombre del archivo JSON con la red bayesiana: ")
+    network = load_bayesian_network(file_path)
 
-# Realizar la inferencia
-prob = bayesian_inference(network, query, evidence)
-print(f"P({query} | {evidence}) = {prob:.4f}")
+    # Pedir tipo de pregunta
+    print("Seleccione el tipo de pregunta:")
+    print("1. Probabilidad de un evento específico")
+    print("2. Distribución de una variable")
+    question_type = input("Ingrese 1 o 2: ")
+
+    if question_type == "1":
+        # Pedir evento específico y evidencia
+        variable = input("Ingrese la variable para la consulta (ej: Appointment): ")
+        value = input(f"Ingrese el valor esperado para {variable} (ej: attend): ")
+        evidence_input = input("Ingrese la evidencia en formato 'variable1=valor1,variable2=valor2' (ej: Rain=light,Train=delayed): ")
+        evidence = dict(item.split("=") for item in evidence_input.split(","))
+        query = {variable: value}
+
+        # Realizar la inferencia
+        prob = bayesian_inference(network, query, evidence)
+        print(f"P({query} | {evidence}) = {prob:.4f}")
+
+    elif question_type == "2":
+        # Pedir variable y evidencia
+        variable = input("Ingrese la variable para la distribución (ej: Appointment): ")
+        evidence_input = input("Ingrese la evidencia en formato 'variable1=valor1,variable2=valor2' (ej: Rain=light,Train=delayed): ")
+        evidence = dict(item.split("=") for item in evidence_input.split(","))
+
+        # Obtener la distribución
+        dist = distribution_of_variable(network, variable, evidence)
+        print(f"Distribución de {variable} dado {evidence}:")
+        for value, prob in dist.items():
+            print(f"P({variable} = {value} | {evidence}) = {prob:.4f}")
+
+if __name__ == "__main__":
+    main()
