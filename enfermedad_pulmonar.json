@@ -1,0 +1,57 @@
+{
+    "nodes": {
+      "Fumador": {"values": ["Si", "No"]},
+      "Exposicion a contaminantes": {"values": ["Alta", "Baja"]},
+      "Edad": {"values": ["Joven", "Mayor"]},
+      "Enfermedad pulmonar": {"values": ["Presente", "Ausente"]},
+      "Tos cronica": {"values": ["Si", "No"]},
+      "Radiografia anormal": {"values": ["Si", "No"]}
+    },
+    "dependencies": {
+      "Enfermedad pulmonar": ["Fumador", "Exposicion a contaminantes", "Edad"],
+      "Tos cronica": ["Enfermedad pulmonar"],
+      "Radiografia anormal": ["Enfermedad pulmonar"]
+    },
+    "probabilities": {
+      "Fumador": {"Si": 0.3, "No": 0.7},
+      "Exposicion a contaminantes": {"Alta": 0.2, "Baja": 0.8},
+      "Edad": {"Joven": 0.5, "Mayor": 0.5},
+      "Tos cronica | Enfermedad pulmonar": {
+        "Presente": {"Si": 0.9, "No": 0.1},
+        "Ausente": {"Si": 0.15, "No": 0.85}
+      },
+      "Radiografia anormal | Enfermedad pulmonar": {
+        "Presente": {"Si": 0.95, "No": 0.05},
+        "Ausente": {"Si": 0.9, "No": 0.1}
+      },
+      "Enfermedad pulmonar | Fumador,Exposicion a contaminantes,Edad": {
+        "Si,Alta,Joven": {"Presente": 0.7, "Ausente": 0.3},
+        "Si,Alta,Mayor": {"Presente": 0.8, "Ausente": 0.2},
+        "Si,Baja,Joven": {"Presente": 0.5, "Ausente": 0.5},
+        "Si,Baja,Mayor": {"Presente": 0.6, "Ausente": 0.4},
+        "No,Alta,Joven": {"Presente": 0.3, "Ausente": 0.7},
+        "No,Alta,Mayor": {"Presente": 0.4, "Ausente": 0.6},
+        "No,Baja,Joven": {"Presente": 0.1, "Ausente": 0.9},
+        "No,Baja,Mayor": {"Presente": 0.2, "Ausente": 0.8}
+      }
+    },
+    "queries": [
+      {
+        "Opcion": "1 (Probabilidad)",
+        "Variable": "Radiografia anormal",
+        "Valor esperado": "Si",
+        "Evidencia": "Fumador=Si"
+      },
+      {
+        "Opcion": "1 (Probabilidad)",
+        "Variable": "Tos cronica",
+        "Valor esperado": "Si",
+        "Evidencia": "Enfermedad pulmonar=Presente,Exposicion a contaminantes=Alta"
+      },
+      {
+        "Opcion": "2 (Distribucion)",
+        "Variable": "Enfermedad pulmonar"
+      }
+    ]
+}
+  
