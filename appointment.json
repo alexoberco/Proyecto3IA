@@ -1,0 +1,46 @@
+{
+  "nodes": {
+    "Rain": {"values": ["none", "light", "heavy"]},
+    "Maintenance": {"values": ["yes", "no"]},
+    "Train": {"values": ["on_time", "delayed"]},
+    "Appointment": {"values": ["attend", "miss"]}
+  },
+  "dependencies": {
+    "Maintenance": ["Rain"],
+    "Train": ["Maintenance", "Rain"],
+    "Appointment": ["Train"]
+  },
+  "probabilities": {
+    "Rain": {"none": 0.7, "light": 0.2, "heavy": 0.1},
+    "Maintenance | Rain": {
+      "none": {"yes": 0.4, "no": 0.6},
+      "light": {"yes": 0.2, "no": 0.8},
+      "heavy": {"yes": 0.1, "no": 0.9}
+    },
+    "Train | Maintenance,Rain": {
+      "yes,none": {"on_time": 0.8, "delayed": 0.2},
+      "yes,light": {"on_time": 0.6, "delayed": 0.4},
+      "yes,heavy": {"on_time": 0.4, "delayed": 0.6},
+      "no,none": {"on_time": 0.9, "delayed": 0.1},
+      "no,light": {"on_time": 0.7, "delayed": 0.3},
+      "no,heavy": {"on_time": 0.5, "delayed": 0.5}
+    },
+    "Appointment | Train": {
+      "on_time": {"attend": 0.9, "miss": 0.1},
+      "delayed": {"attend": 0.6, "miss": 0.4}
+    }
+  },
+  "queries": [
+    {
+      "Opcion": "1 (Probabilidad)",
+      "Variable": "Appointment",
+      "Valor esperado": "attend",
+      "Evidencia": "Rain=light,Maintenance=no"
+    },
+    {
+      "Opcion": "2 (Distribucion)",
+      "Variable": "Appointment",
+      "Evidencia": "Rain=none,Train=delayed"
+    }
+  ]
+}
