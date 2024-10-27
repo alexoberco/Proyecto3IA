@@ -1,0 +1,50 @@
+{
+    "nodes": {
+      "Exam level": {"values": ["dificil", "facil"]},
+      "IQ level": {"values": ["alto", "bajo"]},
+      "Marks": {"values": ["bajas", "altas"]},
+      "Apti score": {"values": ["alto", "bajo"]},
+      "Admission": {"values": ["si", "no"]}
+    },
+    "dependencies": {
+      "Marks": ["Exam level", "IQ level"],
+      "Admission": ["Marks"],
+      "Apti score": ["IQ level"]
+    },
+    "probabilities": {
+      "Exam level": {"dificil": 0.7, "facil": 0.3},
+      "IQ level": {"alto": 0.8, "bajo": 0.2},
+      "Apti score | IQ level": {
+        "alto": {"alto": 0.75, "bajo": 0.25},
+        "bajo": {"alto": 0.4, "bajo": 0.6}
+      },
+      "Admission | Marks": {
+        "bajas": {"si": 0.6, "no": 0.4},
+        "altas": {"si": 0.9, "no": 0.1}
+      },
+      "Marks | Exam level,IQ level": {
+        "dificil,alto": {"bajas": 0.6, "altas": 0.4},
+        "dificil,bajo": {"bajas": 0.9, "altas": 0.1},
+        "facil,alto": {"bajas": 0.5, "altas": 0.5},
+        "facil,bajo": {"bajas": 0.8, "altas": 0.2}
+      }
+    },
+    "queries": [
+      {
+        "Opcion": "1 (Probabilidad)",
+        "Variable": "Admission",
+        "Valor esperado": "si",
+        "Evidencia": "Exam level=dificil"
+      },
+      {
+        "Opcion": "1 (Probabilidad)",
+        "Variable": "Apti score",
+        "Valor esperado": "alto"
+      },
+      {
+        "Opcion": "2 (Distribucion)",
+        "Variable": "Admission"
+      }
+    ]
+}
+  
